@@ -19,6 +19,7 @@
   const defaultSummaryMessage = 'Check the consent box below, then select "Generate Summary" when you\'re ready.';
   const generateButtonDefaultLabel = 'Generate Summary';
   const generateButtonRepeatLabel = 'Generate Again';
+  let hasRestoredDraft = false;
 
   // Elements
   const form = document.getElementById('intakeForm');
@@ -91,6 +92,7 @@
     setupEventListeners();
     if (hasSavedDraft()) {
       showResumeBanner();
+      restoreProgress();
     } else {
       restoreProgress();
     }
@@ -504,7 +506,9 @@
     if (resumeContinueBtn) {
       resumeContinueBtn.addEventListener('click', () => {
         hideResumeBanner();
-        restoreProgress();
+        if (!hasRestoredDraft) {
+          restoreProgress();
+        }
       });
     }
 
@@ -936,6 +940,7 @@
         saveStatus.textContent = `Restored from ${savedTime}`;
         saveStatus.style.color = '#16a34a';
       }
+      hasRestoredDraft = true;
       isRestoring = false;
     } catch (e) {
       console.warn('Restore failed', e);
