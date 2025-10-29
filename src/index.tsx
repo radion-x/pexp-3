@@ -238,6 +238,17 @@ app.get('/', (c) => {
       </div>
 
       <main class="wizard-container">
+        <div id="resumeBanner" class="resume-banner hidden" role="status" aria-live="polite">
+          <div class="resume-banner__content">
+            <div>
+              <strong>Welcome back!</strong> We found an unfinished assessment.
+            </div>
+            <div class="resume-banner__actions">
+              <button type="button" class="btn btn-primary" id="resumeContinueBtn">Continue where I left off</button>
+              <button type="button" class="btn btn-secondary" id="resumeStartOverBtn">Start over</button>
+            </div>
+          </div>
+        </div>
         <!-- Progress Sidebar -->
         <aside class="progress-sidebar">
           <div class="progress-circle">
@@ -588,17 +599,17 @@ app.get('/', (c) => {
                 </div>
 
                 <div class="ai-summary-section" id="aiSummarySection">
-                  <div class="ai-summary-header">
-                    <h3>AI Clinical Summary</h3>
-                    <button type="button" class="btn btn-secondary btn-compact" id="generateSummaryBtn">
-                      Regenerate Summary
-                    </button>
-                  </div>
-                  <p class="ai-summary-status" id="aiSummaryStatus">
-                    Provide consent and continue to generate an AI summary from your assessment.
-                  </p>
-                  <div class="ai-summary-text" id="aiSummaryText" aria-live="polite"></div>
+                <div class="ai-summary-header">
+                  <h3>AI Clinical Summary</h3>
+                  <button type="button" class="btn btn-secondary btn-compact" id="generateSummaryBtn">
+                      Generate Summary
+                  </button>
                 </div>
+                <p class="ai-summary-status" id="aiSummaryStatus">
+                    Check the consent box below, then select "Generate Summary" when you're ready.
+                </p>
+                <div class="ai-summary-text" id="aiSummaryText" aria-live="polite"></div>
+              </div>
 
                 <div class="consent-section">
                   <label class="consent-label">
@@ -618,6 +629,7 @@ app.get('/', (c) => {
               <button type="button" class="btn btn-secondary" id="prevBtn" style="display:none;">← Previous</button>
               <div class="nav-spacer"></div>
               <div id="saveStatus" class="save-status">Autosave: Not saved</div>
+              <button type="button" class="btn btn-tertiary" id="startOverBtn" style="display:none;">Start over</button>
               <button type="button" class="btn btn-primary" id="nextBtn">Continue →</button>
               <button type="submit" class="btn btn-success" id="submitBtn" style="display:none;">Submit Assessment</button>
             </div>

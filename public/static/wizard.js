@@ -16,7 +16,9 @@
   let aiSummaryInFlight = false;
   let aiSummaryPayloadHash = '';
   let aiSummaryController = null;
-  const defaultSummaryMessage = 'Provide consent and continue to generate an AI summary from your assessment.';
+  const defaultSummaryMessage = 'Check the consent box below, then select "Generate Summary" when you\'re ready.';
+  const generateButtonDefaultLabel = 'Generate Summary';
+  const generateButtonRepeatLabel = 'Generate Again';
 
   // Elements
   const form = document.getElementById('intakeForm');
@@ -38,11 +40,36 @@
   const aiSummaryStatusEl = document.getElementById('aiSummaryStatus');
   const aiSummaryTextEl = document.getElementById('aiSummaryText');
   const generateSummaryBtn = document.getElementById('generateSummaryBtn');
+  const startOverBtn = document.getElementById('startOverBtn');
+  const resumeBanner = document.getElementById('resumeBanner');
+  const resumeContinueBtn = document.getElementById('resumeContinueBtn');
+  const resumeStartOverBtn = document.getElementById('resumeStartOverBtn');
 
   function cancelAiSummaryRequest() {
     if (aiSummaryController) {
       aiSummaryController.abort();
       aiSummaryController = null;
+    }
+  }
+
+  function hasSavedDraft() {
+    try {
+      return !!localStorage.getItem(STORAGE_KEY);
+    } catch (error) {
+      console.warn('Unable to access saved draft:', error);
+      return false;
+    }
+  }
+
+  function showResumeBanner() {
+    if (resumeBanner) {
+      resumeBanner.classList.remove('hidden');
+    }
+  }
+
+  function hideResumeBanner() {
+    if (resumeBanner) {
+      resumeBanner.classList.add('hidden');
     }
   }
 
@@ -62,7 +89,11 @@
   function init() {
     resetAiSummaryUI();
     setupEventListeners();
-    restoreProgress();
+    if (hasSavedDraft()) {
+      showResumeBanner();
+    } else {
+      restoreProgress();
+    }
     updateProgress();
     updateNavigation();
   }
@@ -117,7 +148,7 @@
     updateAiSummaryStatus(defaultSummaryMessage);
     if (generateSummaryBtn) {
       generateSummaryBtn.disabled = false;
-      generateSummaryBtn.textContent = 'Regenerate Summary';
+      generateSummaryBtn.textContent = generateButtonDefaultLabel;
     }
   }
 
@@ -269,7 +300,7 @@
       cancelAiSummaryRequest();
       if (generateSummaryBtn) {
         generateSummaryBtn.disabled = false;
-        generateSummaryBtn.textContent = 'Regenerate Summary';
+        generateSummaryBtn.textContent = aiSummaryContent ? generateButtonRepeatLabel : generateButtonDefaultLabel;
       }
     }
   }
@@ -410,6 +441,35 @@
     refreshSelectedAreasCache();
   }
 
+  function startOverWizard() {
+    cancelAiSummaryRequest();
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+      console.warn('Unable to clear saved draft:', error);
+    }
+    form.reset();
+    clearPainSelections();
+    resetAiSummaryUI();
+    hideResumeBanner();
+    currentStep = 1;
+    viewBtns.forEach(btn => {
+      const isFront = btn.dataset.view === 'front';
+      btn.classList.toggle('active', isFront);
+    });
+    bodyDiagrams.forEach(diagram => {
+      diagram.classList.toggle('active', diagram.dataset.view === 'front');
+    });
+    if (sliderValue && painSlider) {
+      sliderValue.textContent = painSlider.value;
+    }
+    if (saveStatus) {
+      saveStatus.textContent = 'Autosave: Not saved';
+      saveStatus.style.color = '#6b7280';
+    }
+    showStep(1);
+  }
+
   // Event Listeners
   function setupEventListeners() {
     // Navigation buttons
@@ -430,6 +490,27 @@
     if (generateSummaryBtn) {
       generateSummaryBtn.addEventListener('click', () => {
         generateAiSummary(true);
+      });
+    }
+
+    if (startOverBtn) {
+      startOverBtn.addEventListener('click', () => {
+        if (window.confirm('Start over? This will clear your saved answers.')) {
+          startOverWizard();
+        }
+      });
+    }
+
+    if (resumeContinueBtn) {
+      resumeContinueBtn.addEventListener('click', () => {
+        hideResumeBanner();
+        restoreProgress();
+      });
+    }
+
+    if (resumeStartOverBtn) {
+      resumeStartOverBtn.addEventListener('click', () => {
+        startOverWizard();
       });
     }
 
@@ -595,6 +676,10 @@
     } else {
       nextBtn.style.display = 'inline-flex';
       submitBtn.style.display = 'none';
+    }
+
+    if (startOverBtn) {
+      startOverBtn.style.display = currentStep === totalSteps ? 'inline-flex' : 'none';
     }
   }
 
