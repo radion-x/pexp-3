@@ -15,6 +15,7 @@
   let aiSummaryErrorMessage = '';
   let aiSummaryInFlight = false;
   let aiSummaryPayloadHash = '';
+  let aiSummaryController = null;
   const defaultSummaryMessage = 'Provide consent and continue to generate an AI summary from your assessment.';
 
   // Elements
@@ -37,6 +38,13 @@
   const aiSummaryStatusEl = document.getElementById('aiSummaryStatus');
   const aiSummaryTextEl = document.getElementById('aiSummaryText');
   const generateSummaryBtn = document.getElementById('generateSummaryBtn');
+
+  function cancelAiSummaryRequest() {
+    if (aiSummaryController) {
+      aiSummaryController.abort();
+      aiSummaryController = null;
+    }
+  }
 
   // Body map elements
   const viewBtns = document.querySelectorAll('.view-btn');
@@ -96,10 +104,11 @@
 
   function renderAiSummaryContent() {
     if (!aiSummaryTextEl) return;
-    aiSummaryTextEl.textContent = aiSummaryContent;
+    aiSummaryTextEl.innerHTML = aiSummaryContent || '';
   }
 
   function resetAiSummaryUI() {
+    cancelAiSummaryRequest();
     aiSummaryContent = '';
     aiSummaryErrorMessage = '';
     aiSummaryPayloadHash = '';
@@ -114,16 +123,22 @@
 
   async function generateAiSummary(force = false) {
     if (!aiSummarySection || !aiSummaryStatusEl) return;
-    if (aiSummaryInFlight) return;
+
+    if (aiSummaryInFlight) {
+      if (!force) return;
+      cancelAiSummaryRequest();
+    }
 
     const payload = serializeForm();
 
     if (!payload.consent) {
+      cancelAiSummaryRequest();
       aiSummaryErrorMessage = 'Consent is required to generate an AI summary.';
       aiSummaryContent = '';
       aiSummaryPayloadHash = '';
       renderAiSummaryContent();
       updateAiSummaryStatus('Please confirm consent to enable AI summary.', 'error');
+      scheduleAutosave();
       return;
     }
 
@@ -139,35 +154,109 @@
       return;
     }
 
+    cancelAiSummaryRequest();
     aiSummaryInFlight = true;
     aiSummaryErrorMessage = '';
     aiSummaryContent = '';
     renderAiSummaryContent();
-    updateAiSummaryStatus('Generating clinical summary...', 'loading');
+    updateAiSummaryStatus('Connecting to AI...', 'loading');
     if (generateSummaryBtn) {
       generateSummaryBtn.disabled = true;
       generateSummaryBtn.textContent = 'Generating...';
     }
 
+    const controller = new AbortController();
+    aiSummaryController = controller;
+
     try {
-      const response = await fetch('/api/generate-summary', {
+      const response = await fetch('/api/generate-summary/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(summaryInput)
+        body: JSON.stringify(summaryInput),
+        signal: controller.signal
       });
 
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok || !data.summary) {
-        const message = data.error || `AI summary failed (Status: ${response.status})`;
+      if (!response.ok || !response.body) {
+        const message = `AI summary failed (Status: ${response.status})`;
         throw new Error(message);
       }
 
-      aiSummaryContent = String(data.summary);
       aiSummaryPayloadHash = payloadHash;
-      renderAiSummaryContent();
-      updateAiSummaryStatus(`Summary generated at ${new Date().toLocaleTimeString()}.`, 'success');
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let receivedAnyChunk = false;
+
+      const processBuffer = async () => {
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const rawLine of lines) {
+          const line = rawLine.trim();
+          if (!line.startsWith('data:')) {
+            continue;
+          }
+
+          const payloadText = line.slice(5).trim();
+          if (!payloadText) continue;
+
+          let event;
+          try {
+            event = JSON.parse(payloadText);
+          } catch {
+            continue;
+          }
+
+          const eventType = event.event || 'delta';
+
+          if (eventType === 'status') {
+            updateAiSummaryStatus(event.message || 'Generating clinical summary...', 'loading');
+          } else if (eventType === 'delta') {
+            const htmlChunk = event.html || event.text || '';
+            if (htmlChunk) {
+              receivedAnyChunk = true;
+              aiSummaryContent += htmlChunk;
+              renderAiSummaryContent();
+              updateAiSummaryStatus('Generating clinical summary...', 'loading');
+            }
+          } else if (eventType === 'complete') {
+            if (typeof event.html === 'string' && event.html.trim()) {
+              aiSummaryContent = event.html;
+              renderAiSummaryContent();
+            }
+            updateAiSummaryStatus(`Summary generated at ${new Date().toLocaleTimeString()}.`, 'success');
+            scheduleAutosave();
+          } else if (eventType === 'error') {
+            const message = event.message || 'AI summary could not be generated.';
+            throw new Error(message);
+          }
+        }
+      };
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) {
+          buffer += decoder.decode();
+          await processBuffer();
+          break;
+        }
+        buffer += decoder.decode(value, { stream: true });
+        await processBuffer();
+      }
+
+      if (!aiSummaryContent && !receivedAnyChunk) {
+        throw new Error('AI summary was empty.');
+      }
+
+      if (!aiSummaryStatusEl.getAttribute('data-state') || aiSummaryStatusEl.getAttribute('data-state') === 'loading') {
+        updateAiSummaryStatus(`Summary generated at ${new Date().toLocaleTimeString()}.`, 'success');
+      }
       scheduleAutosave();
     } catch (error) {
+      if (controller.signal.aborted) {
+        return;
+      }
       const message = error instanceof Error ? error.message : 'Unknown error generating AI summary.';
       aiSummaryContent = '';
       aiSummaryPayloadHash = '';
@@ -177,6 +266,7 @@
       scheduleAutosave();
     } finally {
       aiSummaryInFlight = false;
+      cancelAiSummaryRequest();
       if (generateSummaryBtn) {
         generateSummaryBtn.disabled = false;
         generateSummaryBtn.textContent = 'Regenerate Summary';
@@ -471,6 +561,9 @@
       if (!isRestoring) {
         generateAiSummary();
       }
+    } else {
+      cancelAiSummaryRequest();
+      aiSummaryInFlight = false;
     }
   }
 

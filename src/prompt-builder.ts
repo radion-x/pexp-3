@@ -315,42 +315,55 @@ PAIN MAPPING DATA:
 =================================================================================
 CLINICAL ANALYSIS INSTRUCTIONS:
 =================================================================================
-Your task is to provide a comprehensive clinical analysis for a healthcare provider.
-
-ANALYSIS REQUIREMENTS:
-1. **Pain Presentation**: Synthesize the pain location(s), intensity, quality, timing, and pattern
-2. **Symptom Complex**: Integrate associated symptoms, aggravating/relieving factors
-3. **Functional Impact**: Assess how pain affects daily activities and quality of life
-4. **Medical Context**: Consider relevant history, comorbidities, and prior treatments
-5. **Red Flag Assessment**: Evaluate urgency based on red flag symptoms:
+Provide a comprehensive clinical analysis for a healthcare provider, covering the items below:
+1. Pain presentation: synthesize location(s), intensity, quality, timing, and pattern.
+2. Symptom complex: integrate associated symptoms plus aggravating/relieving factors.
+3. Functional impact: describe limitations in activities or daily living.
+4. Medical context: include relevant history, comorbidities, and prior treatments.
+5. Red flag assessment: evaluate urgency based on red flag symptoms
    - HIGH_URGENCY: Bowel/bladder dysfunction, saddle anesthesia, progressive weakness, severe neurological deficits
    - MODERATE_URGENCY: Fever, unexplained weight loss, night pain, cancer history with new pain
    - LOW_URGENCY: No significant red flags
-6. **Treatment Alignment**: Address patient's stated goals and treatment preferences
-7. **Clinical Reasoning**: Provide differential considerations (NOT definitive diagnoses)
-8. **Recommendations**: Suggest appropriate next steps and triage level
+6. Treatment alignment: connect findings to the patient's stated goals/preferred treatments.
+7. Clinical reasoning: outline differential considerations using conditional language (no definitive diagnoses).
+8. Recommendations: propose next steps and indicate triage urgency.
 
-RESPONSE FORMAT:
-Structure your response as follows:
+OUTPUT REQUIREMENTS (HTML ONLY):
+- Respond with semantic HTML fragments only. Do not return Markdown, backticks, or plain text.
+- Use the following structure (class names optional but recommended):
 
-**Clinical Overview**
-[Synthesize the complete pain presentation in 2-3 sentences]
+<section class="clinical-summary">
+  <section class="clinical-overview">
+    <h3>Clinical Overview</h3>
+    <p>...</p>
+  </section>
+  <section class="key-findings">
+    <h3>Key Findings</h3>
+    <ul>
+      <li><strong>Pain Pattern:</strong> ...</li>
+      <li><strong>Associated Features:</strong> ...</li>
+      <li><strong>Medical Context:</strong> ...</li>
+      <li><strong>Red Flags:</strong> ...</li>
+    </ul>
+  </section>
+  <section class="clinical-considerations">
+    <h3>Clinical Considerations</h3>
+    <p>...</p>
+  </section>
+  <section class="recommendations">
+    <h3>Recommendations</h3>
+    <p><strong>Urgency:</strong> [HIGH_URGENCY / MODERATE_URGENCY / LOW_URGENCY]</p>
+    <p><strong>Next Steps:</strong> ...</p>
+    <p><strong>Patient Goals:</strong> ...</p>
+  </section>
+</section>
 
-**Key Findings**
-- Pain Pattern: [Distribution, quality, timing]
-- Associated Features: [Relevant symptoms and functional impact]
-- Medical Context: [Pertinent history and treatments]
-- Red Flags: [List any present, or state "None identified"]
+- Use <p> for paragraphs and <ul>/<li> for bullet points.
+- Ensure the HTML is well-formed and ready to insert directly via innerHTML.
+- Do not include placeholders, apologies, or surrounding commentary.
+- Avoid inline styles; rely on semantic tags and <strong> for emphasis where needed.
 
-**Clinical Considerations**
-[Discuss possible pathologies to consider - use conditional language, NOT definitive diagnoses]
-
-**Recommendations**
-- Urgency: [HIGH_URGENCY, MODERATE_URGENCY, or LOW_URGENCY]
-- Next Steps: [Specific actions for healthcare provider]
-- Patient Goals: [How to address treatment preferences]
-
-Write professionally for a clinician audience. Be thorough but concise. Use clinical terminology appropriately.
+Write concisely and professionally for a clinician audience while meeting the structure above.
 `;
 
   return comprehensivePrompt;

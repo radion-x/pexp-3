@@ -5,6 +5,7 @@ import { cors } from 'hono/cors'
 import { serveStatic } from '@hono/node-server/serve-static'
 import { join } from 'node:path'
 import { Anthropic } from '@anthropic-ai/sdk'
+import { streamSSE } from 'hono/streaming'
 
 import { generateComprehensivePrompt } from './prompt-builder.js'
 
@@ -23,6 +24,103 @@ app.use('/api/*', cors())
 
 // Serve static assets when running under Node
 app.use('/static/*', serveStatic({ root: join(process.cwd(), 'public') }))
+
+app.post('/api/generate-summary/stream', async (c) => {
+  let formData: unknown
+
+  try {
+    formData = await c.req.json()
+  } catch (error) {
+    console.error('Invalid JSON payload for summary streaming:', error)
+    return c.json({ error: 'Invalid JSON payload.' }, 400)
+  }
+
+  const prompt = generateComprehensivePrompt(formData as any)
+
+  if (!prompt.trim()) {
+    return c.json({ error: 'Unable to build AI prompt from the provided data.' }, 400)
+  }
+
+  if (!anthropic) {
+    return c.json({ error: 'AI summary service is not configured. Please contact support.' }, 503)
+  }
+
+  return streamSSE(c, async (stream) => {
+    let aborted = false
+    stream.onAbort(() => {
+      aborted = true
+    })
+
+    const sendEvent = async (event: string, payload: Record<string, unknown>) => {
+      if (aborted) return
+      await stream.writeSSE({ event, data: JSON.stringify({ event, ...payload }) })
+    }
+
+    await sendEvent('status', { message: 'Connecting to AI...' })
+
+    let summaryHtml = ''
+
+    try {
+      const messageStream: any = await anthropic.messages.create({
+        model: claudeModel,
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: prompt }],
+        stream: true
+      })
+
+      for await (const event of messageStream) {
+        if (aborted) {
+          messageStream?.controller?.abort?.()
+          break
+        }
+
+        if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
+          const chunk = event.delta.text ?? ''
+          if (chunk) {
+            summaryHtml += chunk
+            await sendEvent('delta', { html: chunk })
+          }
+        } else if (event.type === 'message_stop') {
+          break
+        }
+      }
+
+      if (!aborted) {
+        try {
+          const finalMessage = await messageStream.finalMessage()
+          if (!summaryHtml && finalMessage?.content) {
+            for (const part of finalMessage.content as any[]) {
+              if (part?.type === 'text' && part.text) {
+                summaryHtml += part.text
+              }
+            }
+          }
+        } catch (finalError) {
+          console.warn('Failed to fetch final message from stream:', finalError)
+        }
+      }
+    } catch (error) {
+      console.error('AI streaming error:', error)
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : 'An unexpected error occurred while streaming the AI summary.'
+      await sendEvent('error', { message })
+      return
+    }
+
+    if (aborted) {
+      return
+    }
+
+    if (!summaryHtml.trim()) {
+      await sendEvent('error', { message: 'AI summary was empty.' })
+      return
+    }
+
+    await sendEvent('complete', { html: summaryHtml })
+  })
+})
 
 app.post('/api/generate-summary', async (c) => {
   const client = anthropic
@@ -499,7 +597,7 @@ app.get('/', (c) => {
                   <p class="ai-summary-status" id="aiSummaryStatus">
                     Provide consent and continue to generate an AI summary from your assessment.
                   </p>
-                  <pre class="ai-summary-text" id="aiSummaryText" aria-live="polite"></pre>
+                  <div class="ai-summary-text" id="aiSummaryText" aria-live="polite"></div>
                 </div>
 
                 <div class="consent-section">
