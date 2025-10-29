@@ -599,23 +599,22 @@ app.get('/', (c) => {
                 </div>
 
                 <div class="ai-summary-section" id="aiSummarySection">
-                <div class="ai-summary-header">
-                  <h3>AI Clinical Summary</h3>
-                  <button type="button" class="btn btn-secondary btn-compact" id="generateSummaryBtn">
+                  <div class="ai-summary-header">
+                    <h3>AI Clinical Summary</h3>
+                  </div>
+                  <div class="ai-summary-controls">
+                    <label class="consent-label ai-summary-consent">
+                      <input type="checkbox" name="consent" required />
+                      <span>I consent to the collection and use of my health information for assessment and treatment purposes in accordance with HIPAA regulations.</span>
+                    </label>
+                    <button type="button" class="btn btn-secondary btn-compact" id="generateSummaryBtn">
                       Generate Summary
-                  </button>
-                </div>
-                <p class="ai-summary-status" id="aiSummaryStatus">
-                    Check the consent box below, then select "Generate Summary" when you're ready.
-                </p>
-                <div class="ai-summary-text" id="aiSummaryText" aria-live="polite"></div>
-              </div>
-
-                <div class="consent-section">
-                  <label class="consent-label">
-                    <input type="checkbox" name="consent" required />
-                    <span>I consent to the collection and use of my health information for assessment and treatment purposes in accordance with HIPAA regulations.</span>
-                  </label>
+                    </button>
+                  </div>
+                  <p class="ai-summary-status" id="aiSummaryStatus">
+                    Select the consent checkbox, then choose "Generate Summary" when you're ready.
+                  </p>
+                  <div class="ai-summary-text" id="aiSummaryText" aria-live="polite"></div>
                 </div>
 
                 <div class="privacy-notice">

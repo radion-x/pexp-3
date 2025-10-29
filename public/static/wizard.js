@@ -16,9 +16,10 @@
   let aiSummaryInFlight = false;
   let aiSummaryPayloadHash = '';
   let aiSummaryController = null;
-  const defaultSummaryMessage = 'Check the consent box below, then select "Generate Summary" when you\'re ready.';
+  const defaultSummaryMessage = 'Select the consent checkbox, then choose "Generate Summary" when you\'re ready.';
   const generateButtonDefaultLabel = 'Generate Summary';
   const generateButtonRepeatLabel = 'Generate Again';
+  const consentReadyMessage = 'Consent confirmed. Select "Generate Summary" to create your clinical summary.';
   let hasRestoredDraft = false;
   const logPrefix = '[Wizard]';
 
@@ -157,7 +158,9 @@
     renderAiSummaryContent();
     updateAiSummaryStatus(defaultSummaryMessage);
     if (generateSummaryBtn) {
-      generateSummaryBtn.disabled = false;
+      const consentInput = form ? form.querySelector('input[name="consent"]') : null;
+      const consentChecked = consentInput instanceof HTMLInputElement ? consentInput.checked : false;
+      generateSummaryBtn.disabled = !consentChecked;
       generateSummaryBtn.textContent = generateButtonDefaultLabel;
     }
   }
@@ -309,7 +312,9 @@
       aiSummaryInFlight = false;
       cancelAiSummaryRequest();
       if (generateSummaryBtn) {
-        generateSummaryBtn.disabled = false;
+        const consentInput = form.querySelector('input[name="consent"]');
+        const consentChecked = consentInput instanceof HTMLInputElement ? consentInput.checked : false;
+        generateSummaryBtn.disabled = !consentChecked;
         generateSummaryBtn.textContent = aiSummaryContent ? generateButtonRepeatLabel : generateButtonDefaultLabel;
       }
     }
@@ -532,11 +537,21 @@
 
     const consentInput = form.querySelector('input[name="consent"]');
     if (consentInput instanceof HTMLInputElement) {
+      if (generateSummaryBtn) {
+        generateSummaryBtn.disabled = !consentInput.checked;
+      }
       consentInput.addEventListener('change', () => {
+        if (generateSummaryBtn) {
+          generateSummaryBtn.disabled = !consentInput.checked;
+        }
         if (!consentInput.checked) {
           resetAiSummaryUI();
         } else {
-          generateAiSummary(true);
+          cancelAiSummaryRequest();
+          aiSummaryErrorMessage = '';
+          if (!aiSummaryContent) {
+            updateAiSummaryStatus(consentReadyMessage);
+          }
         }
         scheduleAutosave();
       });
@@ -967,6 +982,14 @@
         const savedTime = new Date(obj._savedAt).toLocaleString();
         saveStatus.textContent = `Restored from ${savedTime}`;
         saveStatus.style.color = '#16a34a';
+      }
+      const consentInput = form.querySelector('input[name="consent"]');
+      if (generateSummaryBtn) {
+        const consentChecked = consentInput instanceof HTMLInputElement ? consentInput.checked : false;
+        generateSummaryBtn.disabled = !consentChecked;
+      }
+      if (consentInput instanceof HTMLInputElement && consentInput.checked && !aiSummaryContent) {
+        updateAiSummaryStatus(consentReadyMessage);
       }
       hasRestoredDraft = true;
       isRestoring = false;

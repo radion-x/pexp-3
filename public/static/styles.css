@@ -638,6 +638,30 @@ input[type="range"]::-moz-range-thumb {
   margin-bottom: 12px;
 }
 
+.ai-summary-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.ai-summary-consent {
+  background: var(--primary-light);
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  flex: 1 1 260px;
+}
+
+.ai-summary-consent span {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.ai-summary-controls .btn-compact {
+  align-self: center;
+}
+
 .btn-compact {
   padding: 6px 14px;
   font-size: 13px;
