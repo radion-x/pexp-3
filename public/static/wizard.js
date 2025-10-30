@@ -746,7 +746,9 @@
 
   // Progress
   function updateProgress() {
-    const percentage = Math.round((currentStep / totalSteps) * 100);
+    // Start at 0% for step 1, end at 100% for final step
+    // Progress = (currentStep - 1) / (totalSteps - 1) * 100
+    const percentage = Math.round(((currentStep - 1) / (totalSteps - 1)) * 100);
     const circumference = 283; // 2 * Math.PI * 45
     const offset = circumference - (percentage / 100) * circumference;
 
