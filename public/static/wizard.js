@@ -494,6 +494,19 @@
     nextBtn.addEventListener('click', nextStep);
     form.addEventListener('submit', handleSubmit);
 
+    // Step indicators - make completed and active steps clickable
+    headerSteps.forEach((stepEl, index) => {
+      stepEl.addEventListener('click', () => {
+        const targetStep = index + 1;
+        // Allow clicking on completed steps or current step
+        if (stepEl.classList.contains('completed') || stepEl.classList.contains('active')) {
+          showStep(targetStep);
+        }
+      });
+      // Add pointer cursor for completed and active steps
+      stepEl.style.cursor = 'pointer';
+    });
+
     // Pain slider
     if (painSlider) {
       painSlider.addEventListener('input', () => {

@@ -129,6 +129,19 @@ body {
   color: var(--success);
 }
 
+/* Make completed and active steps clickable */
+.step.completed:hover .step-circle,
+.step.active:hover .step-circle {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+}
+
+.step.completed:hover,
+.step.active:hover {
+  cursor: pointer;
+}
+
 .step-label {
   font-size: 13px;
   color: white;

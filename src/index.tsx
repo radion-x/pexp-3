@@ -366,7 +366,7 @@ app.get('/', (c) => {
                       </select>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" style="display: none;">
                       <label>Pain Intensity (0-10)</label>
                       <div class="slider-container">
                         <span class="slider-label">No Pain</span>
@@ -386,7 +386,7 @@ app.get('/', (c) => {
                 <h2>Medical History</h2>
                 <p class="step-description">Help us understand your medical background and current condition.</p>
                 
-                <div class="form-section">
+                <div class="form-section" style="display: none;">
                   <h3>How did your pain/injury start?</h3>
                   <select name="painStart" class="full-width">
                     <option value="">Select how it started...</option>
@@ -401,21 +401,7 @@ app.get('/', (c) => {
                   </select>
                 </div>
 
-                <div class="form-section">
-                  <h3>⚠️ Red Flag Symptoms</h3>
-                  <p class="warning-text">If you're experiencing any of these symptoms, please seek immediate medical attention.</p>
-                  <div class="checkbox-grid">
-                    <label><input type="checkbox" name="redFlags" value="Recent trauma or injury" /> Recent trauma or injury</label>
-                    <label><input type="checkbox" name="redFlags" value="Loss of bowel/bladder control" /> Loss of bowel/bladder control</label>
-                    <label><input type="checkbox" name="redFlags" value="Fever or unexplained weight loss" /> Fever or unexplained weight loss</label>
-                    <label><input type="checkbox" name="redFlags" value="Severe night pain" /> Severe night pain</label>
-                    <label><input type="checkbox" name="redFlags" value="Pain getting progressively worse" /> Pain getting progressively worse</label>
-                    <label><input type="checkbox" name="redFlags" value="Numbness or tingling" /> Numbness or tingling</label>
-                    <label><input type="checkbox" name="redFlags" value="Muscle weakness" /> Muscle weakness</label>
-                  </div>
-                </div>
-
-                <div class="form-section">
+                <div class="form-section" style="display: none;">
                   <h3>Previous orthopaedic conditions or surgeries</h3>
                   <div class="checkbox-grid">
                     <label><input type="checkbox" name="prevOrtho" value="Fracture/Broken bone" /> Fracture/Broken bone</label>
@@ -461,7 +447,7 @@ app.get('/', (c) => {
                   </div>
                 </div>
 
-                <div class="form-section">
+                <div class="form-section" style="display: none;">
                   <h3>Mobility aids</h3>
                   <div class="checkbox-grid">
                     <label><input type="checkbox" name="mobilityAids" value="Cane" /> Cane</label>
@@ -493,7 +479,7 @@ app.get('/', (c) => {
                   </div>
                 </div>
 
-                <div class="form-section">
+                <div class="form-section" style="display: none;">
                   <h3>Additional medical history</h3>
                   <div class="checkbox-grid">
                     <label><input type="checkbox" name="additionalHistory" value="Diabetes" /> Diabetes</label>
@@ -506,6 +492,20 @@ app.get('/', (c) => {
                     <label><input type="checkbox" name="additionalHistory" value="Blood clotting disorder" /> Blood clotting disorder</label>
                     <label><input type="checkbox" name="additionalHistory" value="Smoking (current/former)" /> Smoking (current/former)</label>
                     <label><input type="checkbox" name="additionalHistory" value="None" /> None</label>
+                  </div>
+                </div>
+
+                <div class="form-section">
+                  <h3>⚠️ Red Flag Symptoms</h3>
+                  <p class="warning-text">If you're experiencing any of these symptoms, please seek immediate medical attention.</p>
+                  <div class="checkbox-grid">
+                    <label><input type="checkbox" name="redFlags" value="Recent trauma or injury" /> Recent trauma or injury</label>
+                    <label><input type="checkbox" name="redFlags" value="Loss of bowel/bladder control" /> Loss of bowel/bladder control</label>
+                    <label><input type="checkbox" name="redFlags" value="Fever or unexplained weight loss" /> Fever or unexplained weight loss</label>
+                    <label><input type="checkbox" name="redFlags" value="Severe night pain" /> Severe night pain</label>
+                    <label><input type="checkbox" name="redFlags" value="Pain getting progressively worse" /> Pain getting progressively worse</label>
+                    <label><input type="checkbox" name="redFlags" value="Numbness or tingling" /> Numbness or tingling</label>
+                    <label><input type="checkbox" name="redFlags" value="Muscle weakness" /> Muscle weakness</label>
                   </div>
                 </div>
               </div>
