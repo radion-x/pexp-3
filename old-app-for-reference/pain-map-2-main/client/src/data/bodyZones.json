@@ -1,0 +1,310 @@
+[
+  {
+    "id": 1,
+    "view": "front",
+    "name": "Head",
+    "key": "front_head",
+    "ariaLabel": "Head region, front view"
+  },
+  {
+    "id": 2,
+    "view": "front",
+    "name": "Neck",
+    "key": "front_neck",
+    "ariaLabel": "Neck region, front view"
+  },
+  {
+    "id": 3,
+    "view": "front",
+    "name": "Right Upper Trapezius",
+    "key": "front_rt_trap",
+    "ariaLabel": "Right upper trapezius, front view"
+  },
+  {
+    "id": 4,
+    "view": "front",
+    "name": "Left Upper Trapezius",
+    "key": "front_lt_trap",
+    "ariaLabel": "Left upper trapezius, front view"
+  },
+  {
+    "id": 5,
+    "view": "front",
+    "name": "Right Shoulder",
+    "key": "front_rt_shoulder",
+    "ariaLabel": "Right shoulder region, front view"
+  },
+  {
+    "id": 6,
+    "view": "front",
+    "name": "Left Shoulder",
+    "key": "front_lt_shoulder",
+    "ariaLabel": "Left shoulder region, front view"
+  },
+  {
+    "id": 7,
+    "view": "front",
+    "name": "Right Upper Arm",
+    "key": "front_rt_upper_arm",
+    "ariaLabel": "Right upper arm, front view"
+  },
+  {
+    "id": 8,
+    "view": "front",
+    "name": "Left Upper Arm",
+    "key": "front_lt_upper_arm",
+    "ariaLabel": "Left upper arm, front view"
+  },
+  {
+    "id": 9,
+    "view": "front",
+    "name": "Right Elbow",
+    "key": "front_rt_elbow",
+    "ariaLabel": "Right elbow region, front view"
+  },
+  {
+    "id": 10,
+    "view": "front",
+    "name": "Left Elbow",
+    "key": "front_lt_elbow",
+    "ariaLabel": "Left elbow region, front view"
+  },
+  {
+    "id": 11,
+    "view": "front",
+    "name": "Right Forearm",
+    "key": "front_rt_forearm",
+    "ariaLabel": "Right forearm, front view"
+  },
+  {
+    "id": 12,
+    "view": "front",
+    "name": "Left Forearm",
+    "key": "front_lt_forearm",
+    "ariaLabel": "Left forearm, front view"
+  },
+  {
+    "id": 13,
+    "view": "front",
+    "name": "Right Hand",
+    "key": "front_rt_hand",
+    "ariaLabel": "Right hand, front view"
+  },
+  {
+    "id": 14,
+    "view": "front",
+    "name": "Left Hand",
+    "key": "front_lt_hand",
+    "ariaLabel": "Left hand, front view"
+  },
+  {
+    "id": 15,
+    "view": "front",
+    "name": "Chest",
+    "key": "front_chest",
+    "ariaLabel": "Chest region, front view"
+  },
+  {
+    "id": 16,
+    "view": "front",
+    "name": "Abdomen",
+    "key": "front_abdomen",
+    "ariaLabel": "Abdominal region, front view"
+  },
+  {
+    "id": 17,
+    "view": "front",
+    "name": "Right Hip",
+    "key": "front_rt_hip",
+    "ariaLabel": "Right hip region, front view"
+  },
+  {
+    "id": 18,
+    "view": "front",
+    "name": "Left Hip",
+    "key": "front_lt_hip",
+    "ariaLabel": "Left hip region, front view"
+  },
+  {
+    "id": 19,
+    "view": "front",
+    "name": "Right Thigh",
+    "key": "front_rt_thigh",
+    "ariaLabel": "Right thigh, front view"
+  },
+  {
+    "id": 20,
+    "view": "front",
+    "name": "Left Thigh",
+    "key": "front_lt_thigh",
+    "ariaLabel": "Left thigh, front view"
+  },
+  {
+    "id": 21,
+    "view": "front",
+    "name": "Right Knee",
+    "key": "front_rt_knee",
+    "ariaLabel": "Right knee region, front view"
+  },
+  {
+    "id": 22,
+    "view": "front",
+    "name": "Left Knee",
+    "key": "front_lt_knee",
+    "ariaLabel": "Left knee region, front view"
+  },
+  {
+    "id": 23,
+    "view": "back",
+    "name": "Head",
+    "key": "back_head",
+    "ariaLabel": "Head region, back view"
+  },
+  {
+    "id": 24,
+    "view": "back",
+    "name": "Neck",
+    "key": "back_neck",
+    "ariaLabel": "Neck region, back view"
+  },
+  {
+    "id": 25,
+    "view": "back",
+    "name": "Right Upper Trapezius",
+    "key": "back_rt_trap",
+    "ariaLabel": "Right upper trapezius, back view"
+  },
+  {
+    "id": 26,
+    "view": "back",
+    "name": "Left Upper Trapezius",
+    "key": "back_lt_trap",
+    "ariaLabel": "Left upper trapezius, back view"
+  },
+  {
+    "id": 27,
+    "view": "back",
+    "name": "Right Shoulder Blade",
+    "key": "back_rt_scapula",
+    "ariaLabel": "Right shoulder blade region, back view"
+  },
+  {
+    "id": 28,
+    "view": "back",
+    "name": "Left Shoulder Blade",
+    "key": "back_lt_scapula",
+    "ariaLabel": "Left shoulder blade region, back view"
+  },
+  {
+    "id": 29,
+    "view": "back",
+    "name": "Right Upper Back",
+    "key": "back_rt_upper",
+    "ariaLabel": "Right upper back, back view"
+  },
+  {
+    "id": 30,
+    "view": "back",
+    "name": "Left Upper Back",
+    "key": "back_lt_upper",
+    "ariaLabel": "Left upper back, back view"
+  },
+  {
+    "id": 31,
+    "view": "back",
+    "name": "Mid Back",
+    "key": "back_mid",
+    "ariaLabel": "Mid back region, back view"
+  },
+  {
+    "id": 32,
+    "view": "back",
+    "name": "Right Lumbar",
+    "key": "back_rt_lumbar",
+    "ariaLabel": "Right lumbar region, back view"
+  },
+  {
+    "id": 33,
+    "view": "back",
+    "name": "Left Lumbar",
+    "key": "back_lt_lumbar",
+    "ariaLabel": "Left lumbar region, back view"
+  },
+  {
+    "id": 34,
+    "view": "back",
+    "name": "Sacrum",
+    "key": "back_sacrum",
+    "ariaLabel": "Sacrum region, back view"
+  },
+  {
+    "id": 35,
+    "view": "back",
+    "name": "Right Buttock",
+    "key": "back_rt_buttock",
+    "ariaLabel": "Right buttock region, back view"
+  },
+  {
+    "id": 36,
+    "view": "back",
+    "name": "Left Buttock",
+    "key": "back_lt_buttock",
+    "ariaLabel": "Left buttock region, back view"
+  },
+  {
+    "id": 37,
+    "view": "back",
+    "name": "Right Upper Arm",
+    "key": "back_rt_upper_arm",
+    "ariaLabel": "Right upper arm, back view"
+  },
+  {
+    "id": 38,
+    "view": "back",
+    "name": "Left Upper Arm",
+    "key": "back_lt_upper_arm",
+    "ariaLabel": "Left upper arm, back view"
+  },
+  {
+    "id": 39,
+    "view": "back",
+    "name": "Right Calf",
+    "key": "back_rt_calf",
+    "ariaLabel": "Right calf, back view"
+  },
+  {
+    "id": 40,
+    "view": "back",
+    "name": "Left Calf",
+    "key": "back_lt_calf",
+    "ariaLabel": "Left calf, back view"
+  },
+  {
+    "id": 41,
+    "view": "back",
+    "name": "Right Ankle",
+    "key": "back_rt_ankle",
+    "ariaLabel": "Right ankle region, back view"
+  },
+  {
+    "id": 42,
+    "view": "back",
+    "name": "Left Ankle",
+    "key": "back_lt_ankle",
+    "ariaLabel": "Left ankle region, back view"
+  },
+  {
+    "id": 43,
+    "view": "back",
+    "name": "Right Foot",
+    "key": "back_rt_foot",
+    "ariaLabel": "Right foot, back view"
+  },
+  {
+    "id": 44,
+    "view": "back",
+    "name": "Left Foot",
+    "key": "back_lt_foot",
+    "ariaLabel": "Left foot, back view"
+  }
+]

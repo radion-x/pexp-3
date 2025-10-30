@@ -313,20 +313,20 @@ PAIN MAPPING DATA:
   comprehensivePrompt += `
 
 =================================================================================
-CLINICAL ANALYSIS INSTRUCTIONS:
+PATIENT HEALTH SUMMARY INSTRUCTIONS:
 =================================================================================
-Provide a comprehensive clinical analysis for a healthcare provider, covering the items below:
-1. Pain presentation: synthesize location(s), intensity, quality, timing, and pattern.
-2. Symptom complex: integrate associated symptoms plus aggravating/relieving factors.
-3. Functional impact: describe limitations in activities or daily living.
-4. Medical context: include relevant history, comorbidities, and prior treatments.
-5. Red flag assessment: evaluate urgency based on red flag symptoms
-   - HIGH_URGENCY: Bowel/bladder dysfunction, saddle anesthesia, progressive weakness, severe neurological deficits
-   - MODERATE_URGENCY: Fever, unexplained weight loss, night pain, cancer history with new pain
-   - LOW_URGENCY: No significant red flags
-6. Treatment alignment: connect findings to the patient's stated goals/preferred treatments.
-7. Clinical reasoning: outline differential considerations using conditional language (no definitive diagnoses).
-8. Recommendations: propose next steps and indicate triage urgency.
+Provide a clear health summary for the patient, covering the items below:
+1. Pain & symptoms: describe location(s), intensity, quality, timing, and pattern.
+2. Related symptoms: include associated symptoms plus what makes things better or worse.
+3. Impact on daily life: explain limitations in activities or daily tasks.
+4. Health background: include relevant medical history, other conditions, and previous treatments.
+5. Warning signs assessment: evaluate urgency based on symptoms
+   - URGENT: Loss of bowel/bladder control, numbness in groin/inner thigh, progressive leg weakness, severe neurological symptoms
+   - SOON: Fever, unexplained weight loss, night pain, cancer history with new pain
+   - ROUTINE: No concerning warning signs
+6. Your goals: connect findings to what you want to achieve with treatment.
+7. What this might mean: explain possible causes and contributing factors using clear language (no definitive diagnoses).
+8. Next steps: recommend actions and indicate how soon you should be seen.
 
 OUTPUT REQUIREMENTS (HTML ONLY):
 - Respond with semantic HTML fragments only. Do not return Markdown, backticks, or plain text.
@@ -363,7 +363,7 @@ OUTPUT REQUIREMENTS (HTML ONLY):
 - Do not include placeholders, apologies, or surrounding commentary.
 - Avoid inline styles; rely on semantic tags and <strong> for emphasis where needed.
 
-Write concisely and professionally for a clinician audience while meeting the structure above.
+Write concisely and professionally for a patient audience while meeting the structure above.
 `;
 
   return comprehensivePrompt;
