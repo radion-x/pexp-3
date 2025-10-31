@@ -374,7 +374,7 @@ app.get('/', (c) => {
                       </select>
                     </div>
 
-                    <div class="form-group" style="display: none;">
+                    <div class="form-group">
                       <label>Pain Intensity (0-10)</label>
                       <div class="slider-container">
                         <span class="slider-label">No Pain</span>
@@ -394,7 +394,7 @@ app.get('/', (c) => {
                 <h2>Medical History</h2>
                 <p class="step-description">Help us understand your medical background and current condition.</p>
                 
-                <div class="form-section" style="display: none;">
+                <div class="form-section">
                   <h3>How did your pain/injury start?</h3>
                   <select name="painStart" class="full-width">
                     <option value="">Select how it started...</option>
@@ -409,7 +409,7 @@ app.get('/', (c) => {
                   </select>
                 </div>
 
-                <div class="form-section" style="display: none;">
+                <div class="form-section">
                   <h3>Previous orthopaedic conditions or surgeries</h3>
                   <div class="checkbox-grid">
                     <label><input type="checkbox" name="prevOrtho" value="Fracture/Broken bone" /> Fracture/Broken bone</label>
@@ -455,7 +455,7 @@ app.get('/', (c) => {
                   </div>
                 </div>
 
-                <div class="form-section" style="display: none;">
+                <div class="form-section">
                   <h3>Mobility aids</h3>
                   <div class="checkbox-grid">
                     <label><input type="checkbox" name="mobilityAids" value="Cane" /> Cane</label>
@@ -487,7 +487,7 @@ app.get('/', (c) => {
                   </div>
                 </div>
 
-                <div class="form-section" style="display: none;">
+                <div class="form-section">
                   <h3>Additional medical history</h3>
                   <div class="checkbox-grid">
                     <label><input type="checkbox" name="additionalHistory" value="Diabetes" /> Diabetes</label>

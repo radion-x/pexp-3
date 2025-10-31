@@ -115,6 +115,16 @@ PAIN MAPPING DATA:
     }
   }
 
+  // Pain Intensity (newly unhidden field)
+  if (formData?.painIntensity !== undefined && formData?.painIntensity !== null && formData?.painIntensity !== '') {
+    comprehensivePrompt += `\nPAIN INTENSITY:\n- Overall pain level: ${formData.painIntensity}/10\n`;
+  }
+
+  // Pain Start/Origin (newly unhidden field)
+  if (formData?.painStart) {
+    comprehensivePrompt += `\nPAIN ORIGIN:\n- How pain started: ${sanitize(formData.painStart)}\n`;
+  }
+
   if (formData?.aggravators) {
     const agg = formData.aggravators;
     const aggFactors: string[] = [];
@@ -250,17 +260,80 @@ PAIN MAPPING DATA:
     if (hist.stressHigh) comprehensivePrompt += '- High stress levels: Yes\n';
   }
 
+  // Previous Orthopaedic Conditions (newly unhidden field)
+  if (Array.isArray(formData?.prevOrtho) && formData.prevOrtho.length > 0) {
+    const filtered = formData.prevOrtho.filter((item: string) => item && item !== 'None');
+    if (filtered.length > 0) {
+      comprehensivePrompt += `\nPREVIOUS ORTHOPAEDIC HISTORY:\n- Prior conditions/surgeries: ${filtered.join(', ')}\n`;
+    }
+  }
+
+  // Mobility Aids (newly unhidden field)
+  if (Array.isArray(formData?.mobilityAids) && formData.mobilityAids.length > 0) {
+    const filtered = formData.mobilityAids.filter((item: string) => item && item !== 'None');
+    if (filtered.length > 0) {
+      comprehensivePrompt += `\nMOBILITY AIDS:\n- Currently using: ${filtered.join(', ')}\n`;
+    }
+  }
+
+  // Additional Medical History/Comorbidities (newly unhidden field)
+  if (Array.isArray(formData?.additionalHistory) && formData.additionalHistory.length > 0) {
+    const filtered = formData.additionalHistory.filter((item: string) => item && item !== 'None');
+    if (filtered.length > 0) {
+      comprehensivePrompt += `\nADDITIONAL MEDICAL CONDITIONS:\n- Comorbidities: ${filtered.join(', ')}\n`;
+    }
+  }
+
+  // Current Treatments
+  if (Array.isArray(formData?.currentTreatments) && formData.currentTreatments.length > 0) {
+    const filtered = formData.currentTreatments.filter((item: string) => item && item !== 'None');
+    if (filtered.length > 0) {
+      comprehensivePrompt += `\nCURRENT TREATMENTS:\n- Receiving: ${filtered.join(', ')}\n`;
+    }
+  }
+
+  // Current Medications
+  if (Array.isArray(formData?.medications) && formData.medications.length > 0) {
+    const filtered = formData.medications.filter((item: string) => item && item !== 'None');
+    if (filtered.length > 0) {
+      comprehensivePrompt += `\nCURRENT MEDICATIONS:\n- Taking: ${filtered.join(', ')}\n`;
+    }
+  }
+
+  // Daily Activity Impact
+  if (Array.isArray(formData?.dailyImpact) && formData.dailyImpact.length > 0) {
+    const filtered = formData.dailyImpact.filter((item: string) => item && item !== 'Minimal impact');
+    if (filtered.length > 0) {
+      comprehensivePrompt += `\nDAILY ACTIVITY IMPACT:\n- Activities affected: ${filtered.join(', ')}\n`;
+    }
+  }
+
   comprehensivePrompt += '\nRED FLAG SYMPTOMS:\n';
   if (formData?.redFlags) {
     const rf = formData.redFlags;
-    if (rf.any) {
+
+    // Handle array format (from HTML checkboxes with name="redFlags")
+    if (Array.isArray(rf)) {
+      if (rf.length > 0) {
+        comprehensivePrompt += '⚠️  RED FLAGS PRESENT\n';
+        rf.forEach((flag: string) => {
+          comprehensivePrompt += `- ${sanitize(flag)}\n`;
+        });
+      } else {
+        comprehensivePrompt += '✓ No red flag symptoms reported\n';
+      }
+    }
+    // Handle object format with 'any' property
+    else if (typeof rf === 'object' && rf.any) {
       comprehensivePrompt += '⚠️  RED FLAGS PRESENT\n';
       if (Array.isArray(rf.reasons) && rf.reasons.length > 0) {
         rf.reasons.forEach((reason: string) => {
           comprehensivePrompt += `- ${sanitize(reason)}\n`;
         });
       }
-    } else {
+    }
+    // Handle object format with individual boolean properties
+    else if (typeof rf === 'object') {
       const redFlagLabels: Record<string, string> = {
         bowelBladderDysfunction: 'Bowel/Bladder Dysfunction',
         progressiveWeakness: 'Progressive Weakness',
@@ -290,7 +363,7 @@ PAIN MAPPING DATA:
       comprehensivePrompt += `\nAdditional Notes: ${redFlagNotes}\n`;
     }
   } else {
-    comprehensivePrompt += 'Red flags section not completed\n';
+    comprehensivePrompt += '✓ No red flag symptoms reported\n';
   }
 
   comprehensivePrompt += '\nTREATMENT GOALS:\n';
