@@ -80,6 +80,9 @@
   const painModalCancel = document.getElementById('painModalCancel');
   const quickSelectBtns = document.querySelectorAll('.quick-select-btn');
 
+  // Track currently selected pain intensity
+  let selectedPainIntensity = 5;
+
   function cancelAiSummaryRequest() {
     if (aiSummaryController) {
       aiSummaryController.abort();
@@ -432,6 +435,9 @@
       painModalLocation.textContent = clickData.displayName;
     }
 
+    // Reset intensity to default (5)
+    selectedPainIntensity = 5;
+
     // Reset slider to default (5)
     if (painModalSlider) {
       painModalSlider.value = 5;
@@ -471,7 +477,7 @@
   function confirmPainPoint() {
     if (!pendingPainPoint) return;
 
-    const intensity = painModalSlider ? Number(painModalSlider.value) : 5;
+    const intensity = selectedPainIntensity;
     const category = intensityCategory(intensity);
 
     const point = {
@@ -815,6 +821,9 @@
     quickSelectBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         const intensity = Number(btn.dataset.intensity);
+
+        // Update tracked intensity
+        selectedPainIntensity = intensity;
 
         // Remove selected class from all buttons
         quickSelectBtns.forEach(b => b.classList.remove('selected'));
