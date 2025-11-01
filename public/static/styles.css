@@ -1124,8 +1124,10 @@ select.full-width {
 
 .quick-select-btn.selected {
   border-color: var(--primary);
-  background: linear-gradient(135deg, rgba(20, 184, 166, 0.1), rgba(20, 184, 166, 0.05));
-  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+  border-width: 3px;
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.15), rgba(20, 184, 166, 0.08));
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.15), 0 4px 12px rgba(20, 184, 166, 0.25);
+  transform: translateY(-2px);
 }
 
 .quick-btn-number {

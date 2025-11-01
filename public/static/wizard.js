@@ -438,6 +438,9 @@
       updateModalSliderDisplay(5);
     }
 
+    // Clear any selected quick select buttons
+    quickSelectBtns.forEach(b => b.classList.remove('selected'));
+
     // Show modal
     painIntensityModal.setAttribute('aria-hidden', 'false');
 
@@ -812,6 +815,13 @@
     quickSelectBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         const intensity = Number(btn.dataset.intensity);
+
+        // Remove selected class from all buttons
+        quickSelectBtns.forEach(b => b.classList.remove('selected'));
+
+        // Add selected class to clicked button
+        btn.classList.add('selected');
+
         if (painModalSlider) {
           painModalSlider.value = intensity;
           updateModalSliderDisplay(intensity);
