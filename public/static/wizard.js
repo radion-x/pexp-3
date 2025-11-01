@@ -23,6 +23,22 @@
   let hasRestoredDraft = false;
   const logPrefix = '[Wizard]';
 
+  // Pain intensity modal state
+  let pendingPainPoint = null;
+  const painDescriptions = {
+    0: 'No Pain',
+    1: 'Very Mild',
+    2: 'Mild Pain',
+    3: 'Mild-Moderate',
+    4: 'Moderate Pain',
+    5: 'Moderate',
+    6: 'Moderate-Severe',
+    7: 'Severe Pain',
+    8: 'Very Severe',
+    9: 'Nearly Unbearable',
+    10: 'Worst Pain Possible'
+  };
+
   function logDebug(...args) {
     if (typeof console !== 'undefined' && console.debug) {
       console.debug(logPrefix, ...args);
@@ -53,6 +69,16 @@
   const resumeBanner = document.getElementById('resumeBanner');
   const resumeContinueBtn = document.getElementById('resumeContinueBtn');
   const resumeStartOverBtn = document.getElementById('resumeStartOverBtn');
+
+  // Pain intensity modal elements
+  const painIntensityModal = document.getElementById('painIntensityModal');
+  const painModalSlider = document.getElementById('painModalSlider');
+  const painModalValue = document.getElementById('painModalValue');
+  const painModalDescription = document.getElementById('painModalDescription');
+  const painModalLocation = document.getElementById('painModalLocation');
+  const painModalConfirm = document.getElementById('painModalConfirm');
+  const painModalCancel = document.getElementById('painModalCancel');
+  const quickSelectBtns = document.querySelectorAll('.quick-select-btn');
 
   function cancelAiSummaryRequest() {
     if (aiSummaryController) {
@@ -380,10 +406,9 @@
 
     const leftPercent = (clickX / imageWidth) * 100;
     const topPercent = (clickY / imageHeight) * 100;
-    const intensityValue = painSlider ? Number(painSlider.value) : 5;
-    const category = intensityCategory(intensityValue);
 
-    const point = {
+    // Show modal to get intensity
+    showPainIntensityModal({
       key,
       view,
       region: correctedName,
@@ -391,16 +416,132 @@
       displayName,
       xPercent: Number(leftPercent.toFixed(4)),
       yPercent: Number(topPercent.toFixed(4)),
-      intensity: intensityValue,
+      layer
+    });
+  }
+
+  // Pain Intensity Modal Functions
+  function showPainIntensityModal(clickData) {
+    if (!painIntensityModal) return;
+
+    // Store pending pain point data
+    pendingPainPoint = clickData;
+
+    // Set location text
+    if (painModalLocation) {
+      painModalLocation.textContent = clickData.displayName;
+    }
+
+    // Reset slider to default (5)
+    if (painModalSlider) {
+      painModalSlider.value = 5;
+      updateModalSliderDisplay(5);
+    }
+
+    // Show modal
+    painIntensityModal.setAttribute('aria-hidden', 'false');
+
+    // Focus on slider for keyboard accessibility
+    setTimeout(() => {
+      if (painModalSlider) {
+        painModalSlider.focus();
+      }
+    }, 300);
+
+    // Prevent body scroll on mobile
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePainIntensityModal() {
+    if (!painIntensityModal) return;
+
+    painIntensityModal.setAttribute('aria-hidden', 'true');
+    pendingPainPoint = null;
+
+    // Re-enable body scroll
+    document.body.style.overflow = '';
+
+    // Clear all quick select active states
+    quickSelectBtns.forEach(btn => btn.classList.remove('selected'));
+  }
+
+  function confirmPainPoint() {
+    if (!pendingPainPoint) return;
+
+    const intensity = painModalSlider ? Number(painModalSlider.value) : 5;
+    const category = intensityCategory(intensity);
+
+    const point = {
+      key: pendingPainPoint.key,
+      view: pendingPainPoint.view,
+      region: pendingPainPoint.region,
+      originalName: pendingPainPoint.originalName,
+      displayName: pendingPainPoint.displayName,
+      xPercent: pendingPainPoint.xPercent,
+      yPercent: pendingPainPoint.yPercent,
+      intensity: intensity,
       intensityLevel: category
     };
 
-    painPointState.set(key, point);
-    addPainMarker(point, layer);
+    painPointState.set(point.key, point);
+    addPainMarker(point, pendingPainPoint.layer);
     refreshSelectedAreasCache();
+    closePainIntensityModal();
+
     if (!isRestoring) {
       scheduleAutosave();
     }
+  }
+
+  function updateModalSliderDisplay(value) {
+    const numValue = Number(value);
+    const category = intensityCategory(numValue);
+    const description = painDescriptions[numValue] || 'Moderate Pain';
+
+    // Update value display
+    if (painModalValue) {
+      painModalValue.textContent = numValue;
+      painModalValue.setAttribute('data-intensity', category);
+    }
+
+    // Update description
+    if (painModalDescription) {
+      painModalDescription.textContent = description;
+    }
+
+    // Update slider data attribute for styling
+    if (painModalSlider) {
+      painModalSlider.setAttribute('data-intensity', category);
+    }
+
+    // Update scale markers
+    updateScaleMarkers(numValue);
+
+    // Update quick select buttons
+    updateQuickSelectButtons(numValue);
+  }
+
+  function updateScaleMarkers(activeValue) {
+    const markers = document.querySelectorAll('.scale-marker');
+    markers.forEach(marker => {
+      const markerValue = Number(marker.dataset.value);
+      if (markerValue === activeValue) {
+        marker.classList.add('active');
+      } else {
+        marker.classList.remove('active');
+      }
+    });
+  }
+
+  function updateQuickSelectButtons(currentValue) {
+    quickSelectBtns.forEach(btn => {
+      const btnValue = Number(btn.dataset.intensity);
+      if (btnValue === currentValue) {
+        btn.classList.add('selected');
+      } else {
+        btn.classList.remove('selected');
+      }
+    });
   }
 
   function addPainMarker(point, layer) {
@@ -639,7 +780,53 @@
       if (e.key === 'Escape' && redFlagModal.getAttribute('aria-hidden') === 'false') {
         redFlagModal.setAttribute('aria-hidden', 'true');
       }
+      // Also handle pain intensity modal
+      if (e.key === 'Escape' && painIntensityModal && painIntensityModal.getAttribute('aria-hidden') === 'false') {
+        closePainIntensityModal();
+      }
     });
+
+    // Pain intensity modal event listeners
+    if (painModalSlider) {
+      painModalSlider.addEventListener('input', (e) => {
+        updateModalSliderDisplay(e.target.value);
+      });
+
+      // Keyboard support for slider
+      painModalSlider.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          confirmPainPoint();
+        }
+      });
+    }
+
+    if (painModalConfirm) {
+      painModalConfirm.addEventListener('click', confirmPainPoint);
+    }
+
+    if (painModalCancel) {
+      painModalCancel.addEventListener('click', closePainIntensityModal);
+    }
+
+    // Quick select buttons
+    quickSelectBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const intensity = Number(btn.dataset.intensity);
+        if (painModalSlider) {
+          painModalSlider.value = intensity;
+          updateModalSliderDisplay(intensity);
+        }
+      });
+    });
+
+    // Close modal on backdrop click
+    if (painIntensityModal) {
+      painIntensityModal.addEventListener('click', (e) => {
+        if (e.target === painIntensityModal || e.target.classList.contains('pain-modal-backdrop')) {
+          closePainIntensityModal();
+        }
+      });
+    }
   }
 
   // Navigation
