@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vite",
     "dev:sandbox": "wrangler pages dev dist --ip 0.0.0.0 --port 3000",
-    "build": "tsc --project tsconfig.server.json",
+    "prebuild": "node -e \"const fs=require('fs');const v=(()=>{try{return require('child_process').execSync('git rev-parse --short HEAD').toString().trim()}catch{return Date.now().toString()}})();const t=new Date().toISOString();fs.writeFileSync('src/version.ts','export const BUILD_VERSION = \\''+v+'\\'\\nexport const BUILD_TIME = \\''+t+'\\'\\n')\"",
+    "build": "npm run prebuild && tsc --project tsconfig.server.json",
     "build:pages": "vite build",
     "preview": "wrangler pages dev dist",
     "start": "node build/server/index.js",

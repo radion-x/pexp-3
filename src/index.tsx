@@ -9,6 +9,7 @@ import { streamSSE } from 'hono/streaming'
 
 import { generateComprehensivePrompt } from './prompt-builder.js'
 import { sendSubmissionEmails } from './email-service.js'
+import { BUILD_VERSION } from './version.js'
 
 const app = new Hono()
 
@@ -233,7 +234,7 @@ app.get('/', (c) => {
       <link rel="manifest" href="/static/manifest.json" />
       <link rel="apple-touch-icon" href="/static/icon-192.png" />
       <title>PEXP - Patient Experience Assessment Platform</title>
-      <link rel="stylesheet" href="/static/styles.css" />
+      <link rel="stylesheet" href="/static/styles.css?v=${BUILD_VERSION}" />
     </head>
     <body>
       <!-- Progress Steps -->
@@ -734,17 +735,8 @@ app.get('/', (c) => {
         </button>
       </div>
 
-      <!-- Modal for red-flag alert -->
-      <div id="redFlagModal" class="modal" aria-hidden="true">
-        <div class="modal-content" role="dialog" aria-modal="true">
-          <h2>⚠️ Important Medical Alert</h2>
-          <p>One or more red flag symptoms were selected. If you are experiencing any red flag symptoms, please seek immediate medical attention or call emergency services.</p>
-          <button id="closeModal" class="btn btn-danger">I Understand</button>
-        </div>
-      </div>
-
-      <script src="/static/pain-map-data.js"></script>
-      <script src="/static/wizard.js"></script>
+      <script src="/static/pain-map-data.js?v=${BUILD_VERSION}"></script>
+      <script src="/static/wizard.js?v=${BUILD_VERSION}"></script>
     </body>
     </html>
   `)

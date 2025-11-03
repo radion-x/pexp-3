@@ -758,25 +758,25 @@
     const redFlagInputs = document.querySelectorAll('input[name="redFlags"]');
     redFlagInputs.forEach(input => {
       input.addEventListener('change', () => {
-        checkRedFlags();
+        // checkRedFlags(); // Disabled red flag modal
         scheduleAutosave();
       });
     });
 
-    // Modal close
-    if (closeModalBtn) {
-      closeModalBtn.addEventListener('click', () => {
-        redFlagModal.setAttribute('aria-hidden', 'true');
-      });
-    }
+    // Modal close - DISABLED
+    // if (closeModalBtn) {
+    //   closeModalBtn.addEventListener('click', () => {
+    //     redFlagModal.setAttribute('aria-hidden', 'true');
+    //   });
+    // }
 
-    if (redFlagModal) {
-      redFlagModal.addEventListener('click', (e) => {
-        if (e.target === redFlagModal) {
-          redFlagModal.setAttribute('aria-hidden', 'true');
-        }
-      });
-    }
+    // if (redFlagModal) {
+    //   redFlagModal.addEventListener('click', (e) => {
+    //     if (e.target === redFlagModal) {
+    //       redFlagModal.setAttribute('aria-hidden', 'true');
+    //     }
+    //   });
+    // }
 
     // Form inputs autosave
     form.querySelectorAll('input, select').forEach(el => {
@@ -786,9 +786,10 @@
 
     // ESC key to close modal
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && redFlagModal.getAttribute('aria-hidden') === 'false') {
-        redFlagModal.setAttribute('aria-hidden', 'true');
-      }
+      // Red flag modal disabled
+      // if (e.key === 'Escape' && redFlagModal.getAttribute('aria-hidden') === 'false') {
+      //   redFlagModal.setAttribute('aria-hidden', 'true');
+      // }
       // Also handle pain intensity modal
       if (e.key === 'Escape' && painIntensityModal && painIntensityModal.getAttribute('aria-hidden') === 'false') {
         closePainIntensityModal();
@@ -1072,13 +1073,13 @@
     });
   }
 
-  // Red Flags
-  function checkRedFlags() {
-    const checked = Array.from(document.querySelectorAll('input[name="redFlags"]:checked'));
-    if (checked.length > 0 && redFlagModal) {
-      redFlagModal.setAttribute('aria-hidden', 'false');
-    }
-  }
+  // Red Flags - DISABLED
+  // function checkRedFlags() {
+  //   const checked = Array.from(document.querySelectorAll('input[name="redFlags"]:checked'));
+  //   if (checked.length > 0 && redFlagModal) {
+  //     redFlagModal.setAttribute('aria-hidden', 'false');
+  //   }
+  // }
 
   // Review Summary
   function generateReview() {
