@@ -459,6 +459,7 @@ body {
   justify-content: center;
   gap: 24px;
   margin-top: 48px;
+  margin-bottom: 48px;
   padding-top: 24px;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
@@ -1949,6 +1950,7 @@ input[type="range"]::-moz-range-thumb {
     align-items: flex-start;
     gap: 12px;
     margin-top: 32px;
+    margin-bottom: 32px;
     padding-top: 16px;
   }
 
