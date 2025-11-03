@@ -2003,6 +2003,18 @@ input[type="range"]::-moz-range-thumb {
     word-wrap: break-word;
   }
 
+  /* Fix: Prevent input focus border/shadow overflow on mobile */
+  input:focus,
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="tel"]:focus,
+  input[type="date"]:focus,
+  select:focus,
+  textarea:focus {
+    transform: none;
+    box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.15);
+  }
+
   .step-description {
     font-size: 14px;
     margin-bottom: 20px;
