@@ -8,6 +8,7 @@ import { Anthropic } from '@anthropic-ai/sdk'
 import { streamSSE } from 'hono/streaming'
 
 import { generateComprehensivePrompt } from './prompt-builder.js'
+import { sendSubmissionEmails } from './email-service.js'
 
 const app = new Hono()
 
@@ -176,7 +177,7 @@ app.post('/api/generate-summary', async (c) => {
 app.post('/api/submit-intake', async (c) => {
   try {
     const body = await c.req.json()
-    
+
     // Log the submission (in production, save to database)
     console.log('Form submission received:', {
       timestamp: new Date().toISOString(),
@@ -184,17 +185,33 @@ app.post('/api/submit-intake', async (c) => {
       selectedAreas: body.selectedAreas,
       painIntensity: body.painIntensity
     })
-    
-    return c.json({ 
-      success: true, 
+
+    // Send confirmation and notification emails
+    const emailConfig = {
+      smtpServer: process.env.MAILGUN_SMTP_SERVER || 'smtp.mailgun.org',
+      smtpPort: Number(process.env.MAILGUN_SMTP_PORT) || 587,
+      smtpLogin: process.env.MAILGUN_SMTP_LOGIN || '',
+      smtpPassword: process.env.MAILGUN_SMTP_PASSWORD || '',
+      senderAddress: process.env.EMAIL_SENDER_ADDRESS || '',
+      recipientAddress: process.env.EMAIL_RECIPIENT_ADDRESS || '',
+      bccAddress: process.env.BCC_EMAIL_RECIPIENT_ADDRESS || '',
+    }
+
+    // Send emails (don't block submission if emails fail)
+    sendSubmissionEmails(body, emailConfig).catch((error) => {
+      console.error('Email sending failed (non-blocking):', error)
+    })
+
+    return c.json({
+      success: true,
       message: 'Assessment submitted successfully',
       id: Math.random().toString(36).substring(7)
     })
   } catch (error) {
     console.error('Submission error:', error)
-    return c.json({ 
-      success: false, 
-      message: 'Failed to submit assessment' 
+    return c.json({
+      success: false,
+      message: 'Failed to submit assessment'
     }, 500)
   }
 })

@@ -383,6 +383,30 @@ PAIN MAPPING DATA:
     }
   }
 
+  // Expected Recovery Timeline
+  if (formData?.timeline) {
+    comprehensivePrompt += `\nEXPECTED RECOVERY TIMELINE:\n- ${sanitize(formData.timeline)}\n`;
+  }
+
+  // Specific Milestones
+  if (Array.isArray(formData?.milestones) && formData.milestones.length > 0) {
+    comprehensivePrompt += `\nSPECIFIC FUNCTIONAL MILESTONES:\n`;
+    formData.milestones.forEach((milestone: any) => {
+      comprehensivePrompt += `- ${sanitize(milestone)}\n`;
+    });
+  }
+
+  // Treatment Concerns
+  if (Array.isArray(formData?.concerns) && formData.concerns.length > 0) {
+    const filtered = formData.concerns.filter((item: string) => item && item !== 'No specific concerns');
+    if (filtered.length > 0) {
+      comprehensivePrompt += `\nTREATMENT CONCERNS:\n`;
+      filtered.forEach((concern: any) => {
+        comprehensivePrompt += `- ${sanitize(concern)}\n`;
+      });
+    }
+  }
+
   comprehensivePrompt += `
 
 =================================================================================
