@@ -26,10 +26,15 @@ function createTransporter(config: EmailConfig): Transporter {
     host: config.smtpServer,
     port: config.smtpPort,
     secure: false, // true for 465, false for other ports
+    connectionTimeout: 10000, // 10 seconds instead of default 2s
+    greetingTimeout: 10000,   // 10 seconds for SMTP greeting
+    socketTimeout: 10000,     // 10 seconds for socket operations
     auth: {
       user: config.smtpLogin,
       pass: config.smtpPassword,
     },
+    logger: true,  // Enable console logging
+    debug: true    // Enable SMTP-level debugging
   })
 }
 
