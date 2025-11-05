@@ -299,6 +299,7 @@
               renderAiSummaryContent();
             }
             updateAiSummaryStatus(`Summary generated at ${new Date().toLocaleTimeString()}.`, 'success');
+            generateRecoveryTrajectory();
             scheduleAutosave();
           } else if (eventType === 'error') {
             const message = event.message || 'AI summary could not be generated.';
@@ -324,6 +325,7 @@
 
       if (!aiSummaryStatusEl.getAttribute('data-state') || aiSummaryStatusEl.getAttribute('data-state') === 'loading') {
         updateAiSummaryStatus(`Summary generated at ${new Date().toLocaleTimeString()}.`, 'success');
+        generateRecoveryTrajectory();
       }
       scheduleAutosave();
     } catch (error) {
@@ -1095,7 +1097,7 @@
     if (formData.fullName) html += `<div class="review-item"><span class="review-label">Name:</span><span class="review-value">${formData.fullName}</span></div>`;
     if (formData.email) html += `<div class="review-item"><span class="review-label">Email:</span><span class="review-value">${formData.email}</span></div>`;
     if (formData.phone) html += `<div class="review-item"><span class="review-label">Phone:</span><span class="review-value">${formData.phone}</span></div>`;
-    if (formData.dob) html += `<div class="review-item"><span class="review-label">Date of Birth:</span><span class="review-value">${formData.dob}</span></div>`;
+    if (formData.ageRange) html += `<div class="review-item"><span class="review-label">Age Range:</span><span class="review-value">${formData.ageRange}</span></div>`;
     html += '</div>';
 
     // Pain Information
@@ -1400,6 +1402,247 @@
         }
       }
     });
+  }
+
+  // Recovery Trajectory Graph
+  let recoveryChart = null;
+
+  function generateRecoveryTrajectory() {
+    const trajectorySection = document.getElementById('recoveryTrajectorySection');
+    const trajectoryDescription = document.getElementById('trajectoryDescription');
+    const chartCanvas = document.getElementById('recoveryTrajectoryChart');
+    const trajectoryLegend = document.getElementById('trajectoryLegend');
+
+    if (!trajectorySection || !chartCanvas || !window.RecoveryBenchmarks || !window.Chart) {
+      console.warn('Recovery trajectory dependencies not loaded');
+      return;
+    }
+
+    const formData = serializeForm();
+
+    // Ensure arrays (formData might have strings or undefined)
+    const selectedAreas = Array.isArray(formData.selectedAreas) ? formData.selectedAreas :
+                          (formData.selectedAreas ? [formData.selectedAreas] : []);
+    const currentTreatments = Array.isArray(formData.currentTreatments) ? formData.currentTreatments :
+                              (formData.currentTreatments ? [formData.currentTreatments] : []);
+    const symptoms = Array.isArray(formData.symptoms) ? formData.symptoms :
+                     (formData.symptoms ? [formData.symptoms] : []);
+    const goals = Array.isArray(formData.goals) ? formData.goals :
+                  (formData.goals ? [formData.goals] : []);
+    const painIntensity = formData.painIntensity || 5;
+    const timeline = formData.timeline || '';
+
+    // Get appropriate benchmark for this patient
+    const benchmark = window.RecoveryBenchmarks.getBenchmarkForPatient(
+      selectedAreas,
+      currentTreatments,
+      symptoms
+    );
+
+    if (!benchmark) {
+      trajectorySection.style.display = 'none';
+      return;
+    }
+
+    // Calculate timeline expectations
+    const patientExpectedWeeks = window.RecoveryBenchmarks.timelineToWeeks(timeline);
+    const recoveryTarget = window.RecoveryBenchmarks.calculateRecoveryTarget(painIntensity, goals);
+    const currentPain = parseFloat(painIntensity) || 5;
+
+    // Build datasets
+    const maxWeeks = Math.max(
+      patientExpectedWeeks * 1.5,
+      benchmark.maxWeeks,
+      24
+    );
+
+    // Patient expectation line (straight line)
+    const patientExpectationData = [];
+    const steps = Math.ceil(patientExpectedWeeks);
+    for (let i = 0; i <= steps; i++) {
+      const week = (patientExpectedWeeks / steps) * i;
+      const pain = currentPain - ((currentPain - recoveryTarget) * (i / steps));
+      patientExpectationData.push({ x: week, y: pain });
+    }
+
+    // Evidence-based benchmark curve
+    const benchmarkData = benchmark.curve.map(point => {
+      const painReduction = (currentPain - recoveryTarget) * (point.painReduction / 100);
+      return {
+        x: point.week,
+        y: currentPain - painReduction
+      };
+    });
+
+    // Current reality point
+    const currentRealityData = [{ x: 0, y: currentPain }];
+
+    // Create the chart
+    const ctx = chartCanvas.getContext('2d');
+
+    // Destroy existing chart if it exists
+    if (recoveryChart) {
+      recoveryChart.destroy();
+    }
+
+    recoveryChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        datasets: [
+          {
+            label: 'Your Expectation',
+            data: patientExpectationData,
+            borderColor: 'rgb(59, 130, 246)',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            borderWidth: 2,
+            borderDash: [5, 5],
+            tension: 0.1,
+            pointRadius: 3,
+            pointHoverRadius: 5
+          },
+          {
+            label: 'Evidence-Based Recovery',
+            data: benchmarkData,
+            borderColor: 'rgb(16, 185, 129)',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            borderWidth: 3,
+            tension: 0.4,
+            fill: true,
+            pointRadius: 0,
+            pointHoverRadius: 5
+          },
+          {
+            label: 'Current Pain Level',
+            data: currentRealityData,
+            borderColor: 'rgb(239, 68, 68)',
+            backgroundColor: 'rgb(239, 68, 68)',
+            borderWidth: 0,
+            pointRadius: 8,
+            pointHoverRadius: 10,
+            pointStyle: 'circle'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2,
+        plugins: {
+          title: {
+            display: false
+          },
+          legend: {
+            display: true,
+            position: 'bottom',
+            labels: {
+              usePointStyle: true,
+              padding: 15,
+              font: {
+                size: 12
+              }
+            }
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              title: function(context) {
+                const week = context[0].parsed.x;
+                if (week < 1) return 'Today';
+                if (week === 1) return '1 week';
+                return Math.round(week) + ' weeks';
+              },
+              label: function(context) {
+                const pain = context.parsed.y.toFixed(1);
+                return context.dataset.label + ': ' + pain + '/10';
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            type: 'linear',
+            title: {
+              display: true,
+              text: 'Time (weeks)',
+              font: {
+                size: 13,
+                weight: 'bold'
+              }
+            },
+            min: 0,
+            max: maxWeeks,
+            ticks: {
+              stepSize: 4,
+              callback: function(value) {
+                if (value === 0) return 'Now';
+                return value;
+              }
+            },
+            grid: {
+              color: 'rgba(0, 0, 0, 0.05)'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Pain Level (0-10)',
+              font: {
+                size: 13,
+                weight: 'bold'
+              }
+            },
+            min: 0,
+            max: 10,
+            ticks: {
+              stepSize: 2
+            },
+            reverse: false,
+            grid: {
+              color: 'rgba(0, 0, 0, 0.05)'
+            }
+          }
+        },
+        interaction: {
+          mode: 'nearest',
+          axis: 'x',
+          intersect: false
+        }
+      }
+    });
+
+    // Update description
+    const comparisonText = generateComparisonText(
+      timeline,
+      currentPain,
+      benchmark,
+      patientExpectedWeeks
+    );
+
+    trajectoryDescription.innerHTML = `
+      <strong>${benchmark.name}</strong><br>
+      ${benchmark.description}<br><br>
+      ${comparisonText}
+    `;
+
+    // Show the section
+    trajectorySection.style.display = 'block';
+  }
+
+  function generateComparisonText(timeline, currentPain, benchmark, patientWeeks) {
+    const benchmarkRange = `${benchmark.minWeeks}–${benchmark.maxWeeks} weeks`;
+
+    if (!timeline) {
+      return `Based on evidence, typical recovery occurs over ${benchmarkRange}.`;
+    }
+
+    if (patientWeeks < benchmark.minWeeks) {
+      return `<span style="color: #f59e0b;">⚠️ Your expectation (${timeline}) may be optimistic. ${benchmark.description.split(';')[0]}.</span>`;
+    } else if (patientWeeks > benchmark.maxWeeks) {
+      return `<span style="color: #3b82f6;">ℹ️ Your expectation (${timeline}) is conservative. Many patients see improvement within ${benchmarkRange}, though individual results vary.</span>`;
+    } else {
+      return `<span style="color: #10b981;">✓ Your expectation (${timeline}) aligns well with typical recovery timelines of ${benchmarkRange}.</span>`;
+    }
   }
 
   // Periodic autosave

@@ -344,8 +344,16 @@ app.get('/', (c) => {
                     <input type="tel" name="phone" />
                   </div>
                   <div class="form-group">
-                    <label>Date of Birth</label>
-                    <input type="date" name="dob" />
+                    <label>Age Range</label>
+                    <select name="ageRange" class="full-width">
+                      <option value="">Select age range...</option>
+                      <option value="Under 18">Under 18</option>
+                      <option value="18-29">18-29</option>
+                      <option value="30-44">30-44</option>
+                      <option value="45-59">45-59</option>
+                      <option value="60-74">60-74</option>
+                      <option value="75 and over">75 and over</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -697,6 +705,17 @@ app.get('/', (c) => {
                   <div class="ai-summary-text" id="aiSummaryText" aria-live="polite"></div>
                 </div>
 
+                <div class="recovery-trajectory-section" id="recoveryTrajectorySection" style="display: none;">
+                  <div class="trajectory-header">
+                    <h3>Recovery Timeline Analysis</h3>
+                    <p class="trajectory-description" id="trajectoryDescription"></p>
+                  </div>
+                  <div class="trajectory-canvas-container">
+                    <canvas id="recoveryTrajectoryChart"></canvas>
+                  </div>
+                  <div class="trajectory-legend" id="trajectoryLegend"></div>
+                </div>
+
                 <div class="privacy-footer">
                   <svg class="privacy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <rect x="5" y="11" width="14" height="10" rx="2" stroke-width="2"/>
@@ -735,6 +754,8 @@ app.get('/', (c) => {
         </button>
       </div>
 
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+      <script src="/static/recovery-benchmarks.js?v=${BUILD_VERSION}"></script>
       <script src="/static/pain-map-data.js?v=${BUILD_VERSION}"></script>
       <script src="/static/wizard.js?v=${BUILD_VERSION}"></script>
     </body>

@@ -18,8 +18,8 @@ You are a clinical AI assistant analyzing a comprehensive pain assessment form.
 PATIENT INFORMATION:
 - Name: ${patientName || 'Not provided'}
 - Email: ${patientEmail || 'Not provided'}
-${formData?.user?.dateOfBirth ? `- Date of Birth: ${formData.user.dateOfBirth}` : ''}
-${formData?.user?.phone ? `- Phone: ${formData.user.phone}` : ''}
+${formData?.ageRange || formData?.user?.ageRange ? `- Age Range: ${formData.ageRange || formData.user.ageRange}` : ''}
+${formData?.phone || formData?.user?.phone ? `- Phone: ${formData.phone || formData.user.phone}` : ''}
 
 PAIN MAPPING DATA:
 `;

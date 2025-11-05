@@ -1647,6 +1647,56 @@ input[type="range"]::-moz-range-thumb {
   line-height: 1.4;
 }
 
+/* Recovery Trajectory Graph */
+.recovery-trajectory-section {
+  margin-top: 32px;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.trajectory-header {
+  margin-bottom: 24px;
+}
+
+.trajectory-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 12px 0;
+}
+
+.trajectory-description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #4b5563;
+  margin: 0;
+  padding: 16px;
+  background: #f9fafb;
+  border-left: 3px solid #10b981;
+  border-radius: 6px;
+}
+
+.trajectory-canvas-container {
+  position: relative;
+  width: 100%;
+  margin: 24px 0;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.trajectory-legend {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+}
+
 /* Navigation */
 .wizard-nav {
   display: flex;
@@ -2166,6 +2216,25 @@ input[type="range"]::-moz-range-thumb {
     text-align: center;
     flex-direction: column;
     gap: 6px;
+  }
+
+  /* Recovery Trajectory - Mobile */
+  .recovery-trajectory-section {
+    margin-top: 24px;
+    padding: 20px 16px;
+  }
+
+  .trajectory-header h3 {
+    font-size: 18px;
+  }
+
+  .trajectory-description {
+    font-size: 13px;
+    padding: 12px;
+  }
+
+  .trajectory-canvas-container {
+    padding: 8px;
   }
 
   /* Save status mobile */
