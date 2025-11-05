@@ -6,6 +6,7 @@ interface EmailConfig {
   senderAddress: string
   recipientAddress: string
   bccAddress?: string
+  mailgunApiKey?: string
 }
 
 interface FormSubmissionData {
@@ -217,7 +218,7 @@ export async function sendSubmissionEmails(
   config: EmailConfig
 ): Promise<{ success: boolean; errors: string[] }> {
   const errors: string[] = []
-  const apiKey = config.smtpPassword // Use SMTP password as Mailgun API key
+  const apiKey = config.mailgunApiKey || config.smtpPassword
   const domain = config.senderAddress.split('@')[1] // Extract domain from sender
 
   // Email 1: Send confirmation to patient

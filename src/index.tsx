@@ -196,6 +196,7 @@ app.post('/api/submit-intake', async (c) => {
       senderAddress: process.env.EMAIL_SENDER_ADDRESS || '',
       recipientAddress: process.env.EMAIL_RECIPIENT_ADDRESS || '',
       bccAddress: process.env.BCC_EMAIL_RECIPIENT_ADDRESS || '',
+      mailgunApiKey: process.env.MAILGUN_API_KEY,
     }
 
     // Send emails (don't block submission if emails fail)
