@@ -1488,6 +1488,53 @@
       recoveryChart.destroy();
     }
 
+    // Custom plugin for pulsating current pain point
+    const pulsatingPlugin = {
+      id: 'pulsatingPoint',
+      afterDatasetsDraw: function(chart) {
+        const ctx = chart.ctx;
+        const dataset = chart.data.datasets[2]; // Current Pain Level dataset
+        const meta = chart.getDatasetMeta(2);
+
+        if (meta.data.length > 0) {
+          const point = meta.data[0];
+          const x = point.x;
+          const y = point.y;
+
+          // Create pulsating effect
+          const time = Date.now() / 1000;
+          const pulse = Math.sin(time * 3) * 0.5 + 0.5; // Oscillates between 0 and 1
+
+          // Draw outer pulsating ring
+          ctx.save();
+          ctx.globalAlpha = 0.4 * (1 - pulse);
+          ctx.strokeStyle = 'rgb(239, 68, 68)';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.arc(x, y, 15 + pulse * 10, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+
+          // Draw middle ring
+          ctx.save();
+          ctx.globalAlpha = 0.3 * pulse;
+          ctx.strokeStyle = 'rgb(239, 68, 68)';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(x, y, 10 + pulse * 5, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+
+          // Request animation frame to keep pulsating
+          setTimeout(() => {
+            if (chart && !chart.isDestroyed) {
+              chart.update('none');
+            }
+          }, 50);
+        }
+      }
+    };
+
     recoveryChart = new Chart(ctx, {
       type: 'line',
       data: {
@@ -1517,12 +1564,14 @@
           {
             label: 'Current Pain Level',
             data: currentRealityData,
-            borderColor: 'rgb(239, 68, 68)',
+            borderColor: '#ffffff',
             backgroundColor: 'rgb(239, 68, 68)',
-            borderWidth: 0,
-            pointRadius: 8,
-            pointHoverRadius: 10,
-            pointStyle: 'circle'
+            borderWidth: 3,
+            pointRadius: 12,
+            pointHoverRadius: 15,
+            pointStyle: 'circle',
+            pointBorderColor: '#ffffff',
+            pointBorderWidth: 3
           }
         ]
       },
@@ -1626,7 +1675,8 @@
           axis: 'x',
           intersect: false
         }
-      }
+      },
+      plugins: [pulsatingPlugin]
     });
 
     // Update description
